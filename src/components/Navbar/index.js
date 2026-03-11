@@ -2,7 +2,7 @@ import {Component} from 'react'
 import {FiSearch} from 'react-icons/fi'
 import {GiHamburgerMenu} from 'react-icons/gi'
 import {AiOutlineClose} from 'react-icons/ai'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 
 import MovieContext from '../../context/MovieContext'
 
@@ -29,9 +29,23 @@ class Navbar extends Component {
       <MovieContext.Consumer>
         {value => {
           const {searchInput, updateSearchInput} = value
+          const {history} = this.props
 
           const onChangeSearch = event => {
             updateSearchInput(event.target.value)
+          }
+
+          const onSearchMovies = () => {
+            if (searchInput.trim() !== '') {
+              history.push('/search')
+            }
+            this.closeMenu()
+          }
+
+          const onKeyDownSearch = event => {
+            if (event.key === 'Enter') {
+              onSearchMovies()
+            }
           }
 
           return (
@@ -40,6 +54,7 @@ class Navbar extends Component {
                 <Link to="/" className="nav-link" onClick={this.closeMenu}>
                   <h1 className="logo">movieDB</h1>
                 </Link>
+
                 <div className="navbar-section-large">
                   <div className="search-container">
                     <input
@@ -47,28 +62,38 @@ class Navbar extends Component {
                       placeholder="Search Movies"
                       value={searchInput}
                       onChange={onChangeSearch}
+                      onKeyDown={onKeyDownSearch}
                       className="search-input"
                     />
-                    <button type="button" className="search-button">
+
+                    <button
+                      type="button"
+                      className="search-button"
+                      onClick={onSearchMovies}
+                    >
                       <FiSearch className="search-icon" />
                     </button>
                   </div>
+
                   <Link to="/" className="nav-link">
                     <button type="button" className="nav-button">
                       Popular Movies
                     </button>
                   </Link>
+
                   <Link to="/top-rated" className="nav-link">
                     <button type="button" className="nav-button">
                       Top Rated
                     </button>
                   </Link>
+
                   <Link to="/upcoming" className="nav-link">
                     <button type="button" className="nav-button">
                       Upcoming
                     </button>
                   </Link>
                 </div>
+
                 <div className="menu-open-close-container">
                   {!menuOpen ? (
                     <button
@@ -89,6 +114,7 @@ class Navbar extends Component {
                   )}
                 </div>
               </div>
+
               <div className={smallNaveContainerClass}>
                 <div className="search-container">
                   <input
@@ -96,16 +122,19 @@ class Navbar extends Component {
                     placeholder="Search Movies"
                     value={searchInput}
                     onChange={onChangeSearch}
+                    onKeyDown={onKeyDownSearch}
                     className="search-input"
                   />
+
                   <button
                     type="button"
                     className="search-button"
-                    onClick={this.closeMenu}
+                    onClick={onSearchMovies}
                   >
                     <FiSearch className="search-icon" />
                   </button>
                 </div>
+
                 <Link to="/" className="nav-link">
                   <button
                     type="button"
@@ -115,6 +144,7 @@ class Navbar extends Component {
                     Popular Movies
                   </button>
                 </Link>
+
                 <Link to="/top-rated" className="nav-link">
                   <button
                     type="button"
@@ -124,6 +154,7 @@ class Navbar extends Component {
                     Top Rated
                   </button>
                 </Link>
+
                 <Link to="/upcoming" className="nav-link">
                   <button
                     type="button"
@@ -142,4 +173,4 @@ class Navbar extends Component {
   }
 }
 
-export default Navbar
+export default withRouter(Navbar)

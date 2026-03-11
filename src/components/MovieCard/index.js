@@ -15,8 +15,10 @@ const MovieCard = props => {
         alt={moviesDetails.title}
         className="poster"
       />
-      <p className="movie-title">{moviesDetails.title}</p>
-      <p className="movie-rating">Rating: {moviesDetails.voteAverage}</p>
+      <div className="movie-details-text-container">
+        <p className="movie-title">{moviesDetails.title}</p>
+        <p className="movie-rating">Rating: {moviesDetails.voteAverage}</p>
+      </div>
       <button
         type="button"
         className="movie-details-button"

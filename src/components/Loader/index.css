@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 90vh;
+  min-height: 100vh;
   background-color: #000; /* dark background to match movie app */
   color: #13abab;
   font-family: 'Roboto', sans-serif;
