@@ -161,7 +161,7 @@ class TopRatedMovies extends Component {
       <>
         <Navbar />
         <div className="popular-movies-container">
-          <h1 className="popular-heading">Popular</h1>
+          <h1 className="popular-heading">Top Rated</h1>
 
           <ul className="movies-list-container">
             {topRatedMoviesList.map(eachMovie => (
