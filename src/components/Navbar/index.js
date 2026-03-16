@@ -1,5 +1,4 @@
 import {Component} from 'react'
-import {FiSearch} from 'react-icons/fi'
 import {GiHamburgerMenu} from 'react-icons/gi'
 import {AiOutlineClose} from 'react-icons/ai'
 import {Link, withRouter} from 'react-router-dom'
@@ -71,13 +70,13 @@ class Navbar extends Component {
                       className="search-button"
                       onClick={onSearchMovies}
                     >
-                      <FiSearch className="search-icon" />
+                      Search
                     </button>
                   </div>
 
                   <Link to="/" className="nav-link">
                     <button type="button" className="nav-button">
-                      Popular Movies
+                      Popular
                     </button>
                   </Link>
 
@@ -131,7 +130,7 @@ class Navbar extends Component {
                     className="search-button"
                     onClick={onSearchMovies}
                   >
-                    <FiSearch className="search-icon" />
+                    Search
                   </button>
                 </div>
 
@@ -141,7 +140,7 @@ class Navbar extends Component {
                     className="nav-button"
                     onClick={this.closeMenu}
                   >
-                    Popular Movies
+                    Popular
                   </button>
                 </Link>
 

@@ -4,9 +4,9 @@ import {Switch, Route} from 'react-router-dom'
 import PopularMovies from './components/PopularMovies'
 import TopRatedMovies from './components/TopRatedMovies'
 import UpcomingMovies from './components/UpcomingMovies'
-import MovieDetails from './components/MovieDetails'
 import SearchedMovies from './components/SearchedMovies'
 import MovieContext from './context/MovieContext'
+import MovieDetails from './components/MovieDetails'
 
 import './App.css'
 
@@ -31,8 +31,8 @@ class App extends Component {
           <Route exact path="/" component={PopularMovies} />
           <Route exact path="/top-rated" component={TopRatedMovies} />
           <Route exact path="/upcoming" component={UpcomingMovies} />
-          <Route exact path="/movies/:id" component={MovieDetails} />
           <Route exact path="/search" component={SearchedMovies} />
+          <Route exact path="/movie/:id" component={MovieDetails} />
         </Switch>
       </MovieContext.Provider>
     )

@@ -1,76 +1,201 @@
-.movie-details-container {
-  background-color: black;
-  color: white;
-  padding: 30px;
-  min-height: 90vh;
-}
-
-.movie-info {
+.loader-container {
+  height: 100vh;
+  background-color: #000000;
   display: flex;
-  gap: 30px;
-  margin-bottom: 40px;
+  justify-content: center;
+  align-items: center;
 }
 
-.movie-poster {
-  width: 300px;
+.api-error-container {
+  height: 100vh;
+  background-color: #000000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto';
+  color: #ffffff;
+  text-align: center;
+}
+.api-error-text {
+  font-size: 30px;
+}
+.retry-button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-family: 'roboto';
+  font-size: 20px;
+  color: #ffffff;
+  background-color: #d71414;
+  font-weight: 500;
+}
+
+.movie-cast-details-container {
+  min-height: 90vh;
+  background-color: #000000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 30px;
+}
+.movie-details-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 500px;
+  border: 1px solid rgb(127, 127, 127);
   border-radius: 10px;
+  background-color: #2c0303;
+  color: #ffffff;
 }
-
-.movie-text {
-  max-width: 600px;
+.movie-details-poster {
+  height: 100%;
+  width: 30%;
+  border-radius: 10px;
+  margin-right: 10px;
 }
-
-.movie-text h2 {
-  font-size: 32px;
-  margin-bottom: 15px;
+.movie-details-text-container {
+  align-self: flex-start;
 }
-
-.overview {
-  margin-top: 10px;
-  line-height: 1.6;
+.movie-title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #ffffff;
 }
-
-.cast-heading {
-  margin-bottom: 20px;
+.overview-heading {
+  font-size: 20px;
+  font-weight: bold;
 }
-
-.cast-list {
-  list-style: none;
-  padding: 0;
+.overview-para {
+  font-size: 15px;
+}
+.cast-details-container {
+  margin-top: 20px;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
+  gap: 10px;
 }
-
 .cast-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cast-image {
+  height: 160px;
+  width: 160px;
+  border-radius: 80px;
+  color: #ffffff;
+}
+.cast-original-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #d71414;
+  text-align: center;
+}
+.cast-character {
+  font-size: 15px;
+  color: #ffffff;
   text-align: center;
 }
 
-.cast-image {
-  width: 100%;
-  border-radius: 10px;
+.genre-container {
+  display: flex;
+  align-items: center;
+}
+.genre-text {
+  font-size: 15px;
+  margin-right: 5px;
 }
 
-.cast-name {
-  font-weight: bold;
-  margin-top: 8px;
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .movie-details-container {
+    height: auto;
+    padding: 25px;
+  }
+
+  .movie-details-poster {
+    width: 40%;
+  }
+
+  .movie-title {
+    font-size: 26px;
+  }
+
+  .cast-details-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .cast-image {
+    height: 130px;
+    width: 130px;
+  }
 }
 
-.cast-character {
-  font-size: 14px;
-  color: #aaa;
-}
+@media screen and (min-width: 576px) and (max-width: 767px) {
+  .movie-details-container {
+    flex-direction: column;
+    height: auto;
+    padding: 20px;
+  }
 
-@media (max-width: 900px) {
-  .cast-list {
+  .movie-details-poster {
+    width: 70%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  .movie-title {
+    font-size: 24px;
+  }
+
+  .cast-details-container {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .movie-info {
+  .cast-image {
+    height: 120px;
+    width: 120px;
+  }
+}
+@media screen and (max-width: 575px) {
+  .movie-details-container {
     flex-direction: column;
+    height: auto;
+    padding: 15px;
   }
 
-  .movie-poster {
-    width: 200px;
+  .movie-details-poster {
+    width: 100%;
+    height: auto;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  .movie-title {
+    font-size: 22px;
+  }
+
+  .overview-heading {
+    font-size: 16px;
+  }
+
+  .overview-para {
+    font-size: 13px;
+  }
+
+  .cast-details-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cast-image {
+    height: 110px;
+    width: 110px;
+    border-radius: 55px;
   }
 }

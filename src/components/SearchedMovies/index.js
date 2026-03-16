@@ -1,135 +1,210 @@
 import {Component} from 'react'
-import MovieContext from '../../context/MovieContext'
-import Loader from '../Loader'
-import MovieCard from '../MovieCard'
+import {ThreeDots} from 'react-loader-spinner'
+
 import Navbar from '../Navbar'
+import MovieContext from '../../context/MovieContext'
+import MovieCard from '../MovieCard'
 import './index.css'
 
-const apiStatusConstants = {
+const apiConstants = {
   initial: 'INITIAL',
   success: 'SUCCESS',
-  fail: 'FAIL',
+  failure: 'FAILURE',
   inProgress: 'IN_PROGRESS',
 }
 
 class SearchedMovies extends Component {
   state = {
-    moviesList: [],
-    apiStatus: apiStatusConstants.initial,
-    pageNumber: 1,
-    totalPages: 1,
+    apiStatus: apiConstants.initial,
+    searchedMoviesList: [],
+    totalPages: 0,
+    currentPage: 1,
   }
 
   componentDidMount() {
-    this.getSearchResults()
+    this.getPopularMovies(1)
   }
 
-  getSearchResults = async () => {
-    const {pageNumber} = this.state
+  getPopularMovies = async page => {
+    this.setState({apiStatus: apiConstants.inProgress})
     const {searchInput} = this.context
+    const getSearchedMoviesURL = `https://api.themoviedb.org/3/search/movie?api_key=d3af25522bc1d33c14e81cf86ea8ba56&language=en-US&query=${searchInput}&page=${page}`
 
-    this.setState({apiStatus: apiStatusConstants.inProgress})
+    const options = {
+      method: 'GET',
+    }
 
-    const url = `https://api.themoviedb.org/3/search/movie?api_key=d3af25522bc1d33c14e81cf86ea8ba56&language=en-US&query=${searchInput}&page=${pageNumber}`
+    try {
+      const response = await fetch(getSearchedMoviesURL, options)
 
-    const response = await fetch(url)
+      if (!response.ok) {
+        this.setState({apiStatus: apiConstants.failure})
+        return
+      }
 
-    if (response.ok) {
       const data = await response.json()
 
-      const updatedMovies = data.results.map(each => ({
-        id: each.id,
-        title: each.title,
-        voteAverage: each.vote_average,
-        posterPath: each.poster_path,
+      const updatedData = data.results.map(eachMovie => ({
+        id: eachMovie.id,
+        title: eachMovie.title,
+        posterPath: eachMovie.poster_path,
+        voteAverage: eachMovie.vote_average,
       }))
 
       this.setState({
-        moviesList: updatedMovies,
+        searchedMoviesList: updatedData,
+        apiStatus: apiConstants.success,
         totalPages: data.total_pages,
-        apiStatus: apiStatusConstants.success,
+        currentPage: page,
       })
-    } else {
-      this.setState({apiStatus: apiStatusConstants.fail})
+    } catch (error) {
+      this.setState({apiStatus: apiConstants.failure})
+    }
+  }
+
+  goToPreviousPage = () => {
+    const {currentPage} = this.state
+
+    if (currentPage > 1) {
+      this.getPopularMovies(currentPage - 1)
+    }
+  }
+
+  goToNextPage = () => {
+    const {currentPage, totalPages} = this.state
+
+    if (currentPage < totalPages) {
+      this.getPopularMovies(currentPage + 1)
     }
   }
 
   goToPage = page => {
-    this.setState({pageNumber: page}, this.getSearchResults)
+    this.getPopularMovies(page)
+  }
+
+  renderPagination = () => {
+    const {currentPage, totalPages} = this.state
+
+    const nextPage1 = currentPage + 1
+    const nextPage2 = currentPage + 2
+
+    return (
+      <div className="pagination-container">
+        <button
+          type="button"
+          onClick={this.goToPreviousPage}
+          disabled={currentPage === 1}
+          className="page-button"
+        >
+          {'<<'}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => this.goToPage(currentPage)}
+          className="active-button"
+        >
+          {currentPage}
+        </button>
+
+        {nextPage1 <= totalPages && (
+          <button
+            type="button"
+            onClick={() => this.goToPage(nextPage1)}
+            className="page-button"
+          >
+            {nextPage1}
+          </button>
+        )}
+
+        {nextPage2 <= totalPages && (
+          <button
+            type="button"
+            onClick={() => this.goToPage(nextPage2)}
+            className="page-button"
+          >
+            {nextPage2}
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={this.goToNextPage}
+          disabled={currentPage === totalPages}
+          className="page-button"
+        >
+          {'>>'}
+        </button>
+      </div>
+    )
+  }
+
+  renderError = () => {
+    const {currentPage} = this.state
+
+    return (
+      <div className="api-error-container">
+        <h1 className="api-error-text">Something went wrong</h1>
+        <button
+          type="button"
+          className="retry-button"
+          onClick={() => this.getPopularMovies(currentPage)}
+        >
+          Retry
+        </button>
+      </div>
+    )
   }
 
   renderSuccessView = () => {
-    const {moviesList, pageNumber, totalPages} = this.state
+    const {searchedMoviesList} = this.state
 
     return (
       <>
         <Navbar />
+        <div className="popular-movies-container">
+          <h1 className="popular-heading">Popular</h1>
 
-        <div className="movies-main-container">
           <ul className="movies-list-container">
-            {moviesList.map(eachMovie => (
-              <MovieCard key={eachMovie.id} moviesDetails={eachMovie} />
+            {searchedMoviesList.map(eachMovie => (
+              <MovieCard key={eachMovie.id} movie={eachMovie} />
             ))}
           </ul>
 
-          <div className="paging-container">
-            <button
-              type="button"
-              disabled={pageNumber === 1}
-              onClick={() => this.goToPage(pageNumber - 1)}
-              className="page-button"
-            >
-              {'<<'}
-            </button>
-
-            {Array.from({length: 5}, (_, index) => {
-              const page = pageNumber + index - 2
-              if (page < 1 || page > totalPages) return null
-
-              return (
-                <button
-                  key={page}
-                  type="button"
-                  className={`page-button ${
-                    page === pageNumber ? 'active' : ''
-                  }`}
-                  onClick={() => this.goToPage(page)}
-                >
-                  {page}
-                </button>
-              )
-            })}
-
-            <button
-              type="button"
-              disabled={pageNumber === totalPages}
-              onClick={() => this.goToPage(pageNumber + 1)}
-              className="page-button"
-            >
-              {'>>'}
-            </button>
-          </div>
+          {this.renderPagination()}
         </div>
       </>
     )
   }
 
-  render() {
+  renderLoader = () => (
+    <div className="loader-container">
+      <ThreeDots
+        height="60"
+        width="60"
+        color="rgba(255, 107, 107, 0.8)"
+        visible
+      />
+    </div>
+  )
+
+  renderFinalView = () => {
     const {apiStatus} = this.state
 
     switch (apiStatus) {
-      case apiStatusConstants.inProgress:
-        return <Loader />
-
-      case apiStatusConstants.success:
+      case apiConstants.success:
         return this.renderSuccessView()
-
-      case apiStatusConstants.fail:
-        return <p>Failed to fetch searched movies.</p>
-
+      case apiConstants.failure:
+        return this.renderError()
+      case apiConstants.inProgress:
+        return this.renderLoader()
       default:
         return null
     }
+  }
+
+  render() {
+    return this.renderFinalView()
   }
 }
 

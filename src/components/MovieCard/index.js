@@ -2,32 +2,33 @@ import {withRouter} from 'react-router-dom'
 import './index.css'
 
 const MovieCard = props => {
-  const {moviesDetails, history} = props
+  const {movie, history} = props
 
-  const goToMovieDetails = () => {
-    history.push(`/movies/${moviesDetails.id}`)
+  const routeToMovieDetails = () => {
+    history.push(`/movie/${movie.id}`)
   }
 
   return (
     <li className="movie-card">
       <img
-        src={`https://image.tmdb.org/t/p/original${moviesDetails.posterPath}`}
-        alt={moviesDetails.title}
-        className="poster"
+        src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
+        alt={movie.title}
+        className="movie-poster"
       />
-      <div className="movie-details-text-container">
-        <p className="movie-title">{moviesDetails.title}</p>
-        <p className="movie-rating">Rating: {moviesDetails.voteAverage}</p>
+      <div className="movie-card-details-container">
+        <div className="movie-card-title-rating-container">
+          <p className="title">{movie.title}</p>
+          <p className="rating">{movie.voteAverage}</p>
+        </div>
+        <button
+          type="button"
+          className="view-details-button"
+          onClick={routeToMovieDetails}
+        >
+          View Details
+        </button>
       </div>
-      <button
-        type="button"
-        className="movie-details-button"
-        onClick={goToMovieDetails}
-      >
-        View Details
-      </button>
     </li>
   )
 }
-
 export default withRouter(MovieCard)

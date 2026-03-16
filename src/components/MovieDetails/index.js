@@ -1,152 +1,155 @@
 import {Component} from 'react'
-import Navbar from '../Navbar'
-import Loader from '../Loader'
-import './index.css'
+import {ThreeDots} from 'react-loader-spinner'
 
-const apiStatusConstants = {
+import './index.css'
+import Navbar from '../Navbar'
+
+const apiConstants = {
   initial: 'INITIAL',
   success: 'SUCCESS',
-  fail: 'FAIL',
+  failure: 'FAILURE',
   inProgress: 'IN_PROGRESS',
 }
 
 class MovieDetails extends Component {
   state = {
-    apiStatus: apiStatusConstants.initial,
     movieDetails: {},
     castList: [],
+    apiStatus: apiConstants.initial,
   }
 
   componentDidMount() {
-    this.getMovieDetails()
+    this.getMovieAndCastDetails()
   }
 
-  getMovieDetails = async () => {
+  getMovieAndCastDetails = async () => {
+    this.setState({apiStatus: apiConstants.inProgress})
     const {match} = this.props
     const {id} = match.params
-
-    this.setState({apiStatus: apiStatusConstants.inProgress})
-
+    const getMovieDetailsURL = `https://api.themoviedb.org/3/movie/${id}?api_key=d3af25522bc1d33c14e81cf86ea8ba56&language=en-US`
+    const getMovieCastDetailsURL = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=d3af25522bc1d33c14e81cf86ea8ba56&language=en-US`
+    const options = {
+      method: 'GET',
+    }
     try {
-      const movieResponse = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}?api_key=d3af25522bc1d33c14e81cf86ea8ba56&language=en-US`,
-      )
-
-      const movieData = await movieResponse.json()
-
-      const castResponse = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}/credits?api_key=d3af25522bc1d33c14e81cf86ea8ba56&language=en-US`,
-      )
-
+      const movieRespone = await fetch(getMovieDetailsURL, options)
+      const movieData = await movieRespone.json()
+      const castResponse = await fetch(getMovieCastDetailsURL, options)
       const castData = await castResponse.json()
-
-      const updatedCast = castData.cast.map(each => ({
-        id: each.cast_id,
-        name: each.name,
-        character: each.character,
-        profilePath: each.profile_path,
+      const updatedMovieData = {
+        title: movieData.title,
+        posterPath: movieData.poster_path,
+        voteAverage: movieData.vote_average,
+        runtime: movieData.runtime,
+        releaseDate: movieData.release_date,
+        backdropPath: movieData.backdrop_path,
+        overview: movieData.overview,
+        genres: movieData.genres,
+      }
+      const updatedCastData = castData.cast.map(eachCast => ({
+        profilePath: eachCast.profile_path,
+        character: eachCast.character,
+        originalName: eachCast.original_name,
       }))
 
       this.setState({
-        movieDetails: movieData,
-        castList: updatedCast,
-        apiStatus: apiStatusConstants.success,
+        movieDetails: updatedMovieData,
+        castList: updatedCastData,
+        apiStatus: apiConstants.success,
       })
     } catch (error) {
-      this.setState({apiStatus: apiStatusConstants.fail})
+      this.setState({apiStatus: apiConstants.failure})
     }
   }
 
-  renderMovieDetails = () => {
+  renderSuccessView = () => {
     const {movieDetails, castList} = this.state
 
     return (
       <>
         <Navbar />
-
-        <div className="movie-details-container">
-          <div className="movie-info">
+        <div className="movie-cast-details-container">
+          <div className="movie-details-container">
             <img
-              src={`https://image.tmdb.org/t/p/original${movieDetails.poster_path}`}
+              src={`https://image.tmdb.org/t/p/w500${movieDetails.posterPath}`}
               alt={movieDetails.title}
-              className="movie-poster"
+              className="movie-details-poster"
             />
-
-            <div className="movie-text">
-              <h2>{movieDetails.title}</h2>
-
-              <p>
-                <strong>Rating:</strong> {movieDetails.vote_average}
-              </p>
-
-              <p>
-                <strong>Duration:</strong> {movieDetails.runtime} mins
-              </p>
-
-              <p>
-                <strong>Genres:</strong>{' '}
-                {movieDetails.genres &&
-                  movieDetails.genres.map(each => each.name).join(', ')}
-              </p>
-
-              <p>
-                <strong>Release Date:</strong> {movieDetails.release_date}
-              </p>
-
-              <p className="overview">{movieDetails.overview}</p>
+            <div className="movie-details-text-container">
+              <p className="movie-title">{movieDetails.title}</p>
+              <p className="overview-heading">Overview</p>
+              <p className="overview-para">{movieDetails.overview}</p>
+              <div className="movie-other-details-container">
+                <p className="overview-heading">Release Date</p>
+                <p className="overview-para">{movieDetails.releaseDate}</p>
+                <p className="overview-heading">Genre</p>
+                <div className="genre-container">
+                  <div className="genre-container">
+                    {movieDetails.genres &&
+                      movieDetails.genres.map(eachGenre => (
+                        <p className="genre-text" key={eachGenre.id}>
+                          {eachGenre.name}
+                        </p>
+                      ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <h3 className="cast-heading">Cast</h3>
-
-          <ul className="cast-list">
-            {castList.map(each => (
-              <li key={each.id} className="cast-card">
+          <div className="cast-details-container">
+            {castList.map(eachCast => (
+              <div className="cast-card" key={eachCast.id}>
                 <img
-                  src={
-                    each.profilePath
-                      ? `https://image.tmdb.org/t/p/original${each.profilePath}`
-                      : 'https://via.placeholder.com/150'
-                  }
-                  alt={each.name}
+                  src={`https://image.tmdb.org/t/p/w500${eachCast.profilePath}`}
                   className="cast-image"
+                  alt={eachCast.originalName}
                 />
-
-                <p className="cast-name">{each.name}</p>
-
-                <p className="cast-character">as {each.character}</p>
-              </li>
+                <p className="cast-original-name">{eachCast.originalName}</p>
+                <p className="cast-character">{eachCast.character}</p>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </>
     )
   }
 
-  renderFailure = () => (
-    <div className="failure-view">
-      <Navbar />
-      <p>Failed to fetch movie details. Please try again.</p>
+  renderLoader = () => (
+    <div className="loader-container">
+      <ThreeDots
+        height="60"
+        width="60"
+        color="rgba(255, 107, 107, 0.8)"
+        visible
+      />
+    </div>
+  )
+
+  renderError = () => (
+    <div className="api-error-container">
+      <h1 className="api-error-text">Something went wrong</h1>
+      <button
+        type="button"
+        className="retry-button"
+        onClick={() => this.getMovieAndCastDetails()}
+      >
+        Retry
+      </button>
     </div>
   )
 
   render() {
     const {apiStatus} = this.state
-
     switch (apiStatus) {
-      case apiStatusConstants.inProgress:
-        return <Loader />
-
-      case apiStatusConstants.success:
-        return this.renderMovieDetails()
-
-      case apiStatusConstants.fail:
-        return this.renderFailure()
-
+      case apiConstants.success:
+        return this.renderSuccessView()
+      case apiConstants.failure:
+        return this.renderError()
+      case apiConstants.inProgress:
+        return this.renderLoader()
       default:
         return null
     }
   }
 }
-
 export default MovieDetails
