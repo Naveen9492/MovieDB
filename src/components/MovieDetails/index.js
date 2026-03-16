@@ -103,6 +103,11 @@ class MovieDetails extends Component {
                   src={`https://image.tmdb.org/t/p/w500${eachCast.profilePath}`}
                   className="cast-image"
                   alt={eachCast.originalName}
+                  onError={e => {
+                    e.currentTarget.onerror = null
+                    e.currentTarget.src =
+                      'https://sadgirldp.com/wp-content/uploads/No-Dp-Black.jpeg'
+                  }}
                 />
                 <p className="cast-original-name">{eachCast.originalName}</p>
                 <p className="cast-character">{eachCast.character}</p>
